@@ -29,7 +29,7 @@ HW#3
 
 Create the best possible classifier of sleep from acceleration and heart rate
 
-Best Model Features I used:
+Best Model Features I used (data from 8 people):
 
 Wanted to normalize all features to a scale of each person, and then keep rolling averages
 of heart rate and acceleration. I combined all acceleration into just a magnitude feature, 
