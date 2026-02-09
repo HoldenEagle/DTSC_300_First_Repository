@@ -71,27 +71,33 @@ acc_mag_norm_60m     0.118934
 hr_norm_60m          0.082632
 hr_norm_30m          0.076491
 hr_norm              0.047230
+
 dtype: float64
+
 Best threshold: 0.7163764470955606
 Precision: 0.803921568627451
 Recall: 0.6721311475409836
 F1: 0.732142852182717
 Fold 1 | AUC: 0.940 | Precision: 0.804 | Recall: 0.672 | F1: 0.732
+
 Best threshold: 0.46816520847102866
 Precision: 0.53
 Recall: 0.8833333333333333
 F1: 0.6624999953125
 Fold 2 | AUC: 0.935 | Precision: 0.530 | Recall: 0.883 | F1: 0.662
+
 Best threshold: 0.6373048624729275
 Precision: 0.7678571428571429
 Recall: 0.7166666666666667
 F1: 0.741379305350773
 Fold 3 | AUC: 0.946 | Precision: 0.768 | Recall: 0.717 | F1: 0.741
+
 Best threshold: 0.596213979235793
 Precision: 0.6949152542372882
 Recall: 0.6833333333333333
 F1: 0.6890756252524539
 Fold 4 | AUC: 0.942 | Precision: 0.695 | Recall: 0.683 | F1: 0.689
+
 Best threshold: 0.532619798572882
 Precision: 0.676056338028169
 Recall: 0.8
