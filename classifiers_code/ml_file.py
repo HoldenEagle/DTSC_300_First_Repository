@@ -59,3 +59,23 @@ rc.evaluate(X_test, y_test)
 rc.cross_validate(X, y)
 
 
+print("\n\nNow trying XGBoost with similar parameters...\n\n")
+
+#Now use XGBoost with similar parameters and see if it improves performance
+import xgboost as xgb
+xgb_model = xgb.XGBClassifier(
+    n_estimators=600,
+    max_depth=5,
+    min_child_weight=10,
+    scale_pos_weight=1,
+    random_state=42,
+    n_jobs=-1
+)
+
+xgb_classifier = Reusable_Classifier(model=xgb_model, feature_names=FEATURES)
+xgb_classifier.train(X_train, y_train)
+xgb_classifier.evaluate(X_test, y_test)
+xgb_classifier.cross_validate(X, y)
+
+
+
