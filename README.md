@@ -182,3 +182,9 @@ In this classification problem, we were tasked with using fitbit watch data, suc
 
 
 ![description](diagrams/model_diagram.png)
+
+#HW 5
+
+What is the simplest way you can think of to limit the phonebook-to-phonebook matching problem such that you do not have to do an all-to-all comparison?
+
+One solution I would think about is a method I did at PNC to match similar payments together. We could take the First and Last Names and cluster them (using how many clusters we want) allowing similar names to be grouped together. Then when we are searching names, we can just search that cluster of names, significantly limiting the amount of names we need to search.
