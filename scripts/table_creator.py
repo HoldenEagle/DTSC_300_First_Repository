@@ -5,19 +5,10 @@ import sqlite3
 def minimal_create_database():
     db_path = 'data/article_grant_db.sqlite'
     conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+    #cursor = conn.cursor() makes it possible to execute SQL commands on the database.
+    
 
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS articles (
-            id INTEGER PRIMARY KEY,
-            LastName TEXT,
-            ForeName TEXT,
-            Initials TEXT,
-            Affiliation TEXT
-        )
-    ''')
-
-    conn.commit()
+    
     conn.close()
     
     
