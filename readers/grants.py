@@ -1,10 +1,13 @@
 # CamelCase
 # snake_case -- this is what python programmers use
+
+#Homework: add the same thing as this but for articles
 import pandas as pd
+import SQLAlchemy
 
 
 class Grants():  # class names in python are camel case (e.g. GrantReader)
-    def __init__(self, path: str):
+    def __init__(self, path: str | None = None):
         """Create and parse a Grants file
 
         Args:
@@ -16,6 +19,16 @@ class Grants():  # class names in python are camel case (e.g. GrantReader)
         self.path = path
         self.df = self._parse(path)
         self.grantees = None  # pi names in their own dataframe
+        if path is None:
+            self.df = self._from_db()
+    
+    def _from_db(self, db_path: str = 'data/grants_db.sqlite'):
+        """Load the grants from a database"""
+        engine = SQLAlchemy.create_engine(f'sqlite:///{db_path}')
+        connection = engine.connect()
+        df = pd.read_sql('SELECT * FROM grants', con=connection)
+        connection.close()
+        return df
 
     def _parse(self, path: str):
         """Parse a grants file"""
@@ -58,7 +71,15 @@ class Grants():  # class names in python are camel case (e.g. GrantReader)
         return self.df
     
     def get_grantees(self):
-        return self.grantees        
+        return self.grantees 
+    
+    def to_db(self, db_path: str = 'data/grants_db.sqlite'):
+        """Write the grants to a database"""
+        engine = SQLAlchemy.create_engine(f'sqlite:///{db_path}')
+        connection = engine.connect()
+        self.df.to_sql('grants', con=connection, if_exists='append', index=False)
+        connection.close()
+        pass
 
 
 if __name__ == '__main__':
