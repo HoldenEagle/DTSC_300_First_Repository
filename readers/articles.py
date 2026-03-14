@@ -1,7 +1,8 @@
 import gzip
+from multiprocessing import connection
 import pandas as pd
 import xml.etree.ElementTree as ET
-
+import sqlalchemy as SQLAlchemy
 
 class Articles():
     def __init__(self, path: str):
@@ -94,6 +95,27 @@ class Articles():
         """Get parsed articles"""
         return self.article_df
     
+    def _from_db(self, db_path: str = 'data/article_grant_db.sqlite'):
+        """Load the grants from a database"""
+        engine = SQLAlchemy.create_engine(f'sqlite:///{db_path}')
+        connection = engine.connect()
+        df = pd.read_sql('SELECT * FROM articles', con=connection)
+        connection.close()
+        return df
+    
+    def to_db(self, db_path: str = 'data/article_grant_db.sqlite'):
+        """Write the authors to a database"""
+        engine = SQLAlchemy.create_engine(f'sqlite:///{db_path}')
+        connection = engine.connect()
+
+        # Only keep the author columns you want
+        df_to_insert = self.author_df[['LastName', 'ForeName', 'Initials', 'Affiliation']]
+
+        df_to_insert.to_sql('articles', con=connection, if_exists='append', index=False)
+
+        connection.close()
+
+    
 
 if __name__ == '__main__':
     articles = Articles('C:\\Users\\holde\\DTSC_First_Repo\\DTSC_300_First_Repository\\data\\pubmed26n1335.xml.gz')
@@ -102,6 +124,11 @@ if __name__ == '__main__':
     print(articles.get_authors().columns)
     print("#---------------------#")
     art = articles.get_entries()
+    articles.to_db()
+    print(articles._from_db())
+    #print(art['DateCompleted'].value_counts())
     
-    print(art['DateCompleted'].value_counts())
+    
+    
+    
           

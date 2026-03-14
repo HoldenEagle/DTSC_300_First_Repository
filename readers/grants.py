@@ -2,8 +2,10 @@
 # snake_case -- this is what python programmers use
 
 #Homework: add the same thing as this but for articles
+from multiprocessing.dummy import connection
+
 import pandas as pd
-import SQLAlchemy
+import sqlalchemy as SQLAlchemy
 
 
 class Grants():  # class names in python are camel case (e.g. GrantReader)
@@ -17,12 +19,12 @@ class Grants():  # class names in python are camel case (e.g. GrantReader)
         # "Self is the specific instance of the object" - Computer Scientist 
         # Store shared variables in self
         self.path = path
-        self.df = self._parse(path)
-        self.grantees = None  # pi names in their own dataframe
+        self.grantees = None
+        self.df = self._parse(path)  # pi names in their own dataframe
         if path is None:
             self.df = self._from_db()
     
-    def _from_db(self, db_path: str = 'data/grants_db.sqlite'):
+    def _from_db(self, db_path: str = 'data/article_grant_db.sqlite'):
         """Load the grants from a database"""
         engine = SQLAlchemy.create_engine(f'sqlite:///{db_path}')
         connection = engine.connect()
@@ -73,24 +75,34 @@ class Grants():  # class names in python are camel case (e.g. GrantReader)
     def get_grantees(self):
         return self.grantees 
     
-    def to_db(self, db_path: str = 'data/grants_db.sqlite'):
+    def to_db(self, db_path: str = 'data/article_grant_db.sqlite'):
         """Write the grants to a database"""
         engine = SQLAlchemy.create_engine(f'sqlite:///{db_path}')
         connection = engine.connect()
-        self.df.to_sql('grants', con=connection, if_exists='append', index=False)
+
+        # Only keep the columns you want
+        df_to_insert = self.df[['application_id', 'start_at', 'grant_type', 'total_cost']]
+
+        print(df_to_insert)
+
+        df_to_insert.to_sql('grants', con=connection, if_exists='append', index=False)
+
         connection.close()
-        pass
 
 
 if __name__ == '__main__':
     # This is for debugging
     grants = Grants('C:\\Users\\holde\\DTSC_First_Repo\\DTSC_300_First_Repository\\data\\RePORTER_PRJ_C_FY2025.zip')
     grant_df = grants.get()
+    print(grants.get_grantees().columns)
     #print(grant_df['start_at'].value_counts())
     print(f"Number of missing start_at dates after edit: {grant_df['start_at'].isna().sum()}")
     print("-----------------------")
     
-    #Answer to number 1, getting indivual grantees.
-    grantees = grants.get_grantees()
-    print(grantees.head(10))
+    print(grant_df.head())
+    
+    #grants = grants.get_grantees()
+    #print(grants.head())
+    grants.to_db()
+    print(grants._from_db())    
     
