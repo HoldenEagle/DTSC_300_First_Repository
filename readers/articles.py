@@ -114,6 +114,27 @@ class Articles():
         df_to_insert.to_sql('articles', con=connection, if_exists='append', index=False)
 
         connection.close()
+        
+    def authors_to_db(self, db_path: str = 'data/article_grant_db.sqlite'):
+        """Write the authors to a database"""
+    
+        engine = SQLAlchemy.create_engine(f'sqlite:///{db_path}')
+        connection = engine.connect()
+
+        # Only keep the author columns you want
+        df_to_insert = self.author_df[['PMID', 'LastName', 'ForeName', 'Initials', 'Affiliation']].copy()
+
+        # Create full name column
+        df_to_insert["name"] = df_to_insert["ForeName"].str.strip() + " " + df_to_insert["LastName"].str.strip()
+
+        # Optional but recommended for matching
+        df_to_insert["name"] = df_to_insert["name"].str.lower()
+
+        print(df_to_insert)
+
+        df_to_insert.to_sql('authors', con=connection, if_exists='append', index=False)
+
+        connection.close()
 
     
 
@@ -129,6 +150,8 @@ if __name__ == '__main__':
     
     print(articles.get_authors())
     #print(art['DateCompleted'].value_counts())
+    
+    #articles.authors_to_db()
     
     
     

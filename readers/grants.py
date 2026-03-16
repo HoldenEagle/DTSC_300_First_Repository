@@ -123,6 +123,7 @@ class Grants():  # class names in python are camel case (e.g. GrantReader)
             return name.title()
 
         df_to_insert["pi_name"] = df_to_insert["pi_name"].apply(clean_name)
+        df_to_insert["pi_name"] = df_to_insert["pi_name"].str.lower()
 
         print(df_to_insert)
 

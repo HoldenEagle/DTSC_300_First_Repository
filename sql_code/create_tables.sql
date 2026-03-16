@@ -9,8 +9,7 @@ CREATE TABLE IF NOT EXISTS grants(
 CREATE TABLE authors (
     author_id INTEGER PRIMARY KEY AUTOINCREMENT,
     pmid INTEGER,
-    last_name TEXT,
-    fore_name TEXT,
+    name TEXT,
     initials TEXT,
     affiliation TEXT
 );
