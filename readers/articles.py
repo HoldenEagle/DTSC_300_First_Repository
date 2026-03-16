@@ -124,8 +124,10 @@ if __name__ == '__main__':
     print(articles.get_authors().columns)
     print("#---------------------#")
     art = articles.get_entries()
-    articles.to_db()
-    print(articles._from_db())
+    #articles.to_db()
+    #print(articles._from_db())
+    
+    print(articles.get_authors())
     #print(art['DateCompleted'].value_counts())
     
     

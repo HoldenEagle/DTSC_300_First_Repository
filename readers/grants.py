@@ -96,13 +96,16 @@ if __name__ == '__main__':
     grant_df = grants.get()
     print(grants.get_grantees().columns)
     #print(grant_df['start_at'].value_counts())
-    print(f"Number of missing start_at dates after edit: {grant_df['start_at'].isna().sum()}")
+    #print(f"Number of missing start_at dates after edit: {grant_df['start_at'].isna().sum()}")
     print("-----------------------")
     
-    print(grant_df.head())
+    #print(grant_df.head())
+    print(grants.get_grantees().columns)
+    print(grants.get_grantees().head())
+    
     
     #grants = grants.get_grantees()
     #print(grants.head())
-    grants.to_db()
-    print(grants._from_db())    
+    #grants.to_db()
+    #print(grants._from_db())    
     

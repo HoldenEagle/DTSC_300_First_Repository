@@ -5,3 +5,18 @@ CREATE TABLE IF NOT EXISTS grants(
   grant_type varchar(10),
   total_cost integer
 );
+
+CREATE TABLE authors (
+    author_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pmid INTEGER,
+    last_name TEXT,
+    fore_name TEXT,
+    initials TEXT,
+    affiliation TEXT
+);
+
+
+CREATE TABLE grantees (
+    application_id INTEGER,
+    pi_name TEXT
+);
