@@ -161,3 +161,5 @@ if __name__ == '__main__':
     
     grants.grantees_to_db()
     
+    print(grants._from_db_authors_bridge().head())
+    

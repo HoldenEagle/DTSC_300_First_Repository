@@ -161,6 +161,9 @@ if __name__ == '__main__':
     
     articles.authors_to_db()
     
+    print(articles._from_db_authors_bridge().head())
+
+    
     
     
     
