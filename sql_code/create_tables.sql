@@ -19,3 +19,17 @@ CREATE TABLE grantees (
     application_id INTEGER,
     pi_name TEXT
 );
+
+#We got about 15,800 matches between authors and grantees
+SELECT COUNT(*)
+FROM authors a
+JOIN grantees g
+ON a.name = g.pi_name;
+
+CREATE TABLE author_grantee_bridge AS
+SELECT
+    a.PMID,
+    g.application_id
+FROM authors a
+JOIN grantees g
+ON a.name = g.pi_name;
