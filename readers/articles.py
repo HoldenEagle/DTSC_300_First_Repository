@@ -131,6 +131,8 @@ class Articles():
         df_to_insert["name"] = df_to_insert["name"].str.lower()
 
         print(df_to_insert)
+        
+        df_to_insert = df_to_insert[['PMID', 'name', 'Initials', 'Affiliation']]
 
         df_to_insert.to_sql('authors', con=connection, if_exists='append', index=False)
 
@@ -151,7 +153,7 @@ if __name__ == '__main__':
     print(articles.get_authors())
     #print(art['DateCompleted'].value_counts())
     
-    #articles.authors_to_db()
+    articles.authors_to_db()
     
     
     
