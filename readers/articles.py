@@ -154,6 +154,8 @@ class Articles():
 
         # Only keep the author columns you want
         df_to_insert = self.author_df[['PMID', 'LastName', 'ForeName', 'Initials', 'Affiliation']].copy()
+        #rename column forename to firstname
+        df_to_insert.rename(columns={'ForeName': 'FirstName'}, inplace=True)
 
         df_to_insert.to_sql('authors2', con=connection, if_exists='append', index=False)
 
