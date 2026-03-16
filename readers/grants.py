@@ -6,6 +6,7 @@ from multiprocessing.dummy import connection
 
 import pandas as pd
 import sqlalchemy as SQLAlchemy
+import re
 
 
 class Grants():  # class names in python are camel case (e.g. GrantReader)
@@ -88,6 +89,46 @@ class Grants():  # class names in python are camel case (e.g. GrantReader)
         df_to_insert.to_sql('grants', con=connection, if_exists='append', index=False)
 
         connection.close()
+        
+    
+    #Got this code from CHATGPT, this cleans the pi_names by removing (contact) and middle initials,
+    # and then puts them in the format "First Last"
+    def grantees_to_db(self, db_path: str = 'data/article_grant_db.sqlite'):
+        """Write the grantees to a database"""
+    
+        engine = SQLAlchemy.create_engine(f'sqlite:///{db_path}')
+        connection = engine.connect()
+
+        df_to_insert = self.grantees[['application_id', 'pi_name']].copy()
+
+        def clean_name(name):
+            if pd.isna(name):
+                return name
+        
+            # Remove (contact)
+            name = re.sub(r"\(contact\)", "", name, flags=re.IGNORECASE)
+        
+            # Split "LAST, FIRST ..."
+            parts = name.split(",")
+
+            if len(parts) == 2:
+                last = parts[0].strip()
+                first_part = parts[1].strip()
+
+                # Remove middle initial (anything after first word)
+                first = first_part.split()[0]
+
+                name = f"{first} {last}"
+
+            return name.title()
+
+        df_to_insert["pi_name"] = df_to_insert["pi_name"].apply(clean_name)
+
+        print(df_to_insert)
+
+        df_to_insert.to_sql('grantees', con=connection, if_exists='append', index=False)
+
+        connection.close()
 
 
 if __name__ == '__main__':
@@ -107,5 +148,7 @@ if __name__ == '__main__':
     #grants = grants.get_grantees()
     #print(grants.head())
     #grants.to_db()
-    #print(grants._from_db())    
+    #print(grants._from_db())  
+    
+    grants.grantees_to_db()
     
