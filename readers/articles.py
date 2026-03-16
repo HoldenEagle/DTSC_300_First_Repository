@@ -137,8 +137,14 @@ class Articles():
         df_to_insert.to_sql('authors', con=connection, if_exists='append', index=False)
 
         connection.close()
-
-    
+        
+    def _from_db_authors_bridge(self, db_path: str = 'data/article_grant_db.sqlite'):
+        """Load the authors-grantees bridge table from a database"""
+        engine = SQLAlchemy.create_engine(f'sqlite:///{db_path}')
+        connection = engine.connect()
+        df = pd.read_sql('SELECT * FROM author_grantee_bridge', con=connection)
+        connection.close()
+        return df
 
 if __name__ == '__main__':
     articles = Articles('C:\\Users\\holde\\DTSC_First_Repo\\DTSC_300_First_Repository\\data\\pubmed26n1335.xml.gz')
