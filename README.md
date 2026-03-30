@@ -197,3 +197,74 @@ Over the course of the past couple of weeks, we have done a lot of work regardin
 
 All of our coursework over the past 8 weeks has lead up to dealing with the entity resolution problem. In the first few weeks, we learned about getting features from data to input into a machine learning model to get results. This is a very important step in not only the Entity Resolution problem but in every data problem. This knowledge allowed us to derive features later on when building our Entity Resolution model (such as getting the names of grantees and authors), but also taught us how to engineer new features from the prior features, such as the difference of Fasttext word vectors that we used as features in our Entity Resolution Model. In the problem of predicting sleep using the human activity recognition dataset, we also had to use feature engineering, such as taking the movement acceleration cordinate movements and converting it to one magnitude vector, and normalizing heart rate and other features as well as grouping them into different minute and hour timestamps to derive more meaningful data. We use these same feature engineering skills when solving this Entity Resolution problem between authors and grantees. The next week we learned about Fasttext, a library with the ability to represent words with a corresponding vector. This is a very useful tool for this problem. For example, when connecting authors and grantees, we used Fasttext to generate vector for each string entry, and we can compare the differences to find a certain threshold where we can confidently predict that these two entities are the same. Later on, we took on a real example of Entity Resolution, where we mapped grantees and authors together using the methods I discussed above. This real life case problem was a great way for us to really understand how applicable this problem really is, and real life cases where a solution is needed. We worked through the full training pipeline, making a training dataset to train a machine learning model on. We can then take this dataset and work through a machine learning model to find an applicable threshold to understand the maximum distance in word vectors where we can map two entities together. Finally, we recently learned about SQL and SQL databases. Another important concept we learned was bridge tables, and this idea is very similar to Entity Resolution. In HW 7, I used a bridge table to map authors and grantees together, in a way mapping similar entities together from different tables to connect our data together and make it more meaningful.
 
+
+
+
+
+HW 9: 
+
+Neural Network download code:
+<div>Teachable Machine Image Model</div>
+<button type="button" onclick="init()">Start</button>
+<div id="webcam-container"></div>
+<div id="label-container"></div>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+<script type="text/javascript">
+    // More API functions here:
+    // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+    // the link to your model provided by Teachable Machine export panel
+    const URL = "./my_model/";
+
+    let model, webcam, labelContainer, maxPredictions;
+
+    // Load the image model and setup the webcam
+    async function init() {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        // load the model and metadata
+        // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+        // or files from your local hard drive
+        // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        // Convenience function to setup a webcam
+        const flip = true; // whether to flip the webcam
+        webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+        await webcam.setup(); // request access to the webcam
+        await webcam.play();
+        window.requestAnimationFrame(loop);
+
+        // append elements to the DOM
+        document.getElementById("webcam-container").appendChild(webcam.canvas);
+        labelContainer = document.getElementById("label-container");
+        for (let i = 0; i < maxPredictions; i++) { // and class labels
+            labelContainer.appendChild(document.createElement("div"));
+        }
+    }
+
+    async function loop() {
+        webcam.update(); // update the webcam frame
+        await predict();
+        window.requestAnimationFrame(loop);
+    }
+
+    // run the webcam image through the image model
+    async function predict() {
+        // predict can take in an image, video or canvas html element
+        const prediction = await model.predict(webcam.canvas);
+        for (let i = 0; i < maxPredictions; i++) {
+            const classPrediction =
+                prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+            labelContainer.childNodes[i].innerHTML = classPrediction;
+        }
+    }
+</script>
+
+This model classifies a picture of a human from a picture of a celsius
+using picture of me and pictures of a celsius. I got 100 images for each. This classifier
+performed well because I did not train it, only fine tuned. This is a resnet model that we fine tuned 
+for our specific task. Because it was pretrained, we did not need a large amount of data to train these because we are only fine tuning a fine layer. This resent model has already been pretrained on many images.
