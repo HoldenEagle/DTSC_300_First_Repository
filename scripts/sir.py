@@ -45,8 +45,8 @@ plt.show()
 
 
 #adding a vaccination term to the model
-#lets say 20% of the population gets vaccinated each year, which is 0.2/365 per day
-vaccination_rate = 0.2 / 365
+#lets say 40% of the population gets vaccinated each year, which is 0.4/365 per day
+vaccination_rate = 0.4 / 365
 
 #we can modify the SIR model to include vaccination. The new equations will be:
 #St+1−St=−βItStN−vaccination_rate*St
@@ -78,5 +78,19 @@ plt.plot(R_vacc, label='Recovered with Vaccination')
 plt.xlabel('Days')
 plt.ylabel('Number of People')
 plt.title('SIR Model Simulation with Vaccination')
+plt.legend()
+plt.show()
+
+#lets compare the two models by plotting them on the same graph
+plt.figure(figsize=(10,6))
+plt.plot(S, label='Susceptible without Vaccination')
+plt.plot(I, label='Infected without Vaccination')
+plt.plot(R, label='Recovered without Vaccination')
+plt.plot(S_vacc, label='Susceptible with Vaccination')
+plt.plot(I_vacc, label='Infected with Vaccination')
+plt.plot(R_vacc, label='Recovered with Vaccination')
+plt.xlabel('Days')
+plt.ylabel('Number of People')
+plt.title('Comparison of SIR Model with and without Vaccination')
 plt.legend()
 plt.show()
