@@ -3,8 +3,8 @@
 
 
 #lets initialize gamma and beta
-gamma = 0.1
-beta = 0.25
+gamma = 0.05
+beta = 0.3
 
 #implement these functions St+1−St=−βItStN,It+1−It=βItStN−γIt,Rt+1−Rt=γIt
 import numpy as np
@@ -26,7 +26,7 @@ def sir_model(S0, I0, R0, beta, gamma, days):
     return S, I, R
 
 #lets run this model with gamma, beta, and initial conditions
-days = 200
+days = 1000
 S0 = 9990
 I0 = 10
 R0 = 0
@@ -94,3 +94,34 @@ plt.ylabel('Number of People')
 plt.title('Comparison of SIR Model with and without Vaccination')
 plt.legend()
 plt.show()
+
+
+#now lets simulate a new strand coming in after 100 days with a higher beta (more contagious) and see how it affects the model.
+# We will assume that the new strand has a beta of 0.35 and starts with 10 infected individuals.
+#we also will assume the strand is immune to the vaccine, so the vaccination rate will not affect
+# the new strand. Lets simulate this by running initial SIR model for 100 days, then at day 100 we will change the beta and I0 and run the model for another 900 days.
+
+new_beta = 0.35
+new_I0 = 10
+#run the initial model for 100 days
+S_initial, I_initial, R_initial = sir_model_vaccination(S0, I0, R0, beta, gamma, vaccination_rate, 100)
+#at day 100, we will change the beta and I0 and run the model for
+#another 900 days. We will also need to update the S0 and R0 to reflect the new initial conditions at day 100.
+S_new = 9990
+R_new = 0
+vaccination_rate_new = 0 #since the new strand is immune to the vaccine, we will set the vaccination rate to 0 for the new model
+S_new, I_new, R_new = sir_model_vaccination(S_new, new_I0, R_new, new_beta, gamma, vaccination_rate, 300)
+#lets plot the results
+plt.figure(figsize=(10,6))
+plt.plot(S_initial + S_new, label='Susceptible')
+plt.plot(I_initial + I_new, label='Infected')
+plt.plot(R_initial + R_new, label='Recovered')
+plt.xlabel('Days')
+plt.ylabel('Number of People')
+plt.title('SIR Model Simulation with New Strand')
+plt.legend()
+plt.show()
+
+
+
+
