@@ -1,9 +1,10 @@
 from typing import Any
 
-import keras
+import torch
+import torch.nn as nn
 
 
-class TransformerEncoderBlock(keras.layers.Layer):
+class TransformerEncoderBlock(nn.Module):
     def __init__(
         self, embed_dim: int, num_heads: int, ff_dim: int, dropout: float = 0.1
     ):
@@ -21,35 +22,34 @@ class TransformerEncoderBlock(keras.layers.Layer):
         super().__init__()
         # MultiHeadAttention is the attention matrix of the transformer
         # block
-        self.attn = keras.layers.MultiHeadAttention(
-            num_heads=num_heads, key_dim=embed_dim
+        self.attn = nn.MultiheadAttention(
+            embed_dim=embed_dim, num_heads=num_heads, batch_first=True
         )
 
         # This sequential is the following "multilayer perceptron" or
         # fully connected component of the transformer block.
         # Studies suggest that this is where "facts" are added to
         # embeddings.
-        self.ffn = keras.Sequential(
-            [
-                keras.layers.Dense(ff_dim, activation="relu"),
-                keras.layers.Dense(embed_dim),
-            ]
+        self.ffn = nn.Sequential(
+            nn.Linear(embed_dim, ff_dim),
+            nn.ReLU(),
+            nn.Linear(ff_dim, embed_dim),
         )
 
         # Layer normalization is key because information is _added_
         # to embedding vectors. To ensure that the numbers don't explode,
         # we normalize back to a mean of 0 and stdev of 1
-        self.norm1 = keras.layers.LayerNormalization()
-        self.norm2 = keras.layers.LayerNormalization()
+        self.norm1 = nn.LayerNorm(embed_dim)
+        self.norm2 = nn.LayerNorm(embed_dim)
 
         # Dropout allows better learning. During different training
         # rounds, we temporarily turn off individual neurons. That
         # makes the network more resilient because it has to encode the
         # correct answer even when missing some neurons.
-        self.drop1 = keras.layers.Dropout(dropout)
-        self.drop2 = keras.layers.Dropout(dropout)
+        self.drop1 = nn.Dropout(dropout)
+        self.drop2 = nn.Dropout(dropout)
 
-    def call(self, x: Any, training: bool = False, mask: Any | None = None) -> Any:
+    def forward(self, x: Any, training: bool = False, mask: Any | None = None) -> Any:
         """The call method is defined by keras. This is used to define
         the forward pass.
 
@@ -63,10 +63,10 @@ class TransformerEncoderBlock(keras.layers.Layer):
         Returns:
             Any: the processing from the transformer
         """
-        attn_out = self.attn(x, x, attention_mask=mask)
-        attn_out = self.drop1(attn_out, training=training)
+        attn_out, _ = self.attn(x, x, x, attn_mask=mask)
+        attn_out = self.drop1(attn_out)
         x = self.norm1(x + attn_out)
 
         ffn_out = self.ffn(x)
-        ffn_out = self.drop2(ffn_out, training=training)
+        ffn_out = self.drop2(ffn_out)
         return self.norm2(x + ffn_out)

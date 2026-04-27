@@ -1,9 +1,10 @@
 from typing import Any
 
-import keras
+import torch
+import torch.nn as nn
 
 
-class TransformerDecoderBlock(keras.layers.Layer):
+class TransformerDecoderBlock(nn.Module):
     def __init__(
         self, embed_dim: int, num_heads: int, ff_dim: int, dropout: float = 0.1
     ):
@@ -23,29 +24,28 @@ class TransformerDecoderBlock(keras.layers.Layer):
                 during each training run. Defaults to 0.1.
         """
         super().__init__()
-        self.self_attn = keras.layers.MultiHeadAttention(
-            num_heads=num_heads, key_dim=embed_dim
+        self.self_attn = nn.MultiheadAttention(
+            embed_dim=embed_dim, num_heads=num_heads, batch_first=True
         )
-        self.cross_attn = keras.layers.MultiHeadAttention(
-            num_heads=num_heads, key_dim=embed_dim
-        )
-
-        self.ffn = keras.Sequential(
-            [
-                keras.layers.Dense(ff_dim, activation="relu"),
-                keras.layers.Dense(embed_dim),
-            ]
+        self.cross_attn = nn.MultiheadAttention(
+            embed_dim=embed_dim, num_heads=num_heads, batch_first=True
         )
 
-        self.norm1 = keras.layers.LayerNormalization()
-        self.norm2 = keras.layers.LayerNormalization()
-        self.norm3 = keras.layers.LayerNormalization()
+        self.ffn = nn.Sequential(
+            nn.Linear(embed_dim, ff_dim),
+            nn.ReLU(),
+            nn.Linear(ff_dim, embed_dim),
+        )
 
-        self.drop1 = keras.layers.Dropout(dropout)
-        self.drop2 = keras.layers.Dropout(dropout)
-        self.drop3 = keras.layers.Dropout(dropout)
+        self.norm1 = nn.LayerNorm(embed_dim)
+        self.norm2 = nn.LayerNorm(embed_dim)
+        self.norm3 = nn.LayerNorm(embed_dim)
 
-    def call(
+        self.drop1 = nn.Dropout(dropout)
+        self.drop2 = nn.Dropout(dropout)
+        self.drop3 = nn.Dropout(dropout)
+
+    def forward(
         self, x: Any, enc_out: Any, training: bool = False, enc_mask: Any | None = None
     ) -> Any:
         """The call method is defined by keras. This is used to define
@@ -63,14 +63,23 @@ class TransformerDecoderBlock(keras.layers.Layer):
         Returns:
             Any: the processing from the transformer
         """
-        self_attn_out = self.self_attn(x, x, use_causal_mask=True)
-        self_attn_out = self.drop1(self_attn_out, training=training)
+        # --- Causal mask (replaces use_causal_mask=True) ---
+        seq_len = x.size(1)
+        causal_mask = torch.triu(
+            torch.ones(seq_len, seq_len, device=x.device), diagonal=1
+        ).bool()
+
+        # Self-attention
+        self_attn_out, _ = self.self_attn(x, x, x, attn_mask=causal_mask)
+        self_attn_out = self.drop1(self_attn_out)
         x = self.norm1(x + self_attn_out)
 
-        cross_attn_out = self.cross_attn(x, enc_out, attention_mask=enc_mask)
-        cross_attn_out = self.drop2(cross_attn_out, training=training)
+        # Cross-attention
+        cross_attn_out, _ = self.cross_attn(x, enc_out, enc_out, attn_mask=enc_mask)
+        cross_attn_out = self.drop2(cross_attn_out)
         x = self.norm2(x + cross_attn_out)
 
+        # Feedforward
         ffn_out = self.ffn(x)
-        ffn_out = self.drop3(ffn_out, training=training)
+        ffn_out = self.drop3(ffn_out)
         return self.norm3(x + ffn_out)

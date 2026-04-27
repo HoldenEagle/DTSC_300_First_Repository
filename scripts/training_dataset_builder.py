@@ -2,7 +2,7 @@ import random
 import string
 import pandas as pd
 
-def corrupt_text(text, prob=0.15):
+def corrupt_text(text, prob=0.1):
     chars = list(text)
     i = 0
     
@@ -39,6 +39,20 @@ if __name__ == "__main__":
     #generate one word examples in the training dataset
     words = [
         "hello",
+        "broke",
+        "spelling",
+        "corruption",
+        "example",
+        "joke",
+        "drifting",
+        "from",
+        "my",
+        "innocence",
+        "wanted",
+        "to",
+        "be",
+        "kid",
+        "again"
         "world",
         "python",
         "programming",
@@ -213,12 +227,6 @@ if __name__ == "__main__":
         "determination",
         "courage",
         "confidence",
-        "self-esteem",
-        "self-worth",
-        "self-love",
-        "self-care",
-        "self-improvement",
-        "self-development",
         "awareness",
         "mindfulness",
         "gratitude",
@@ -444,7 +452,7 @@ if __name__ == "__main__":
         "Asteroid",
         "Comet",
         "Meteor",
-        "Black Hole",
+        "Holes",
         "Nebula",
         "Supernova",
         "Cosmos",
@@ -523,7 +531,7 @@ if __name__ == "__main__":
         "cake",
         "cookie",
         "pie",
-        "ice cream",
+        "cream",
         "chocolate",
         "candy",
         "fruit",
@@ -605,10 +613,6 @@ if __name__ == "__main__":
         "poultry",
         "vegetarian",
         "vegan",
-        "gluten-free",
-        "dairy-free",
-        "nut-free",
-        "sugar-free",
         "lipids",
         "carbohydrates",
         "proteins",
@@ -617,19 +621,118 @@ if __name__ == "__main__":
         "calories",
         "weight",
         "height",
-        "age"
+        "age",
+        "gender",
+        "family",
+        "friend",
+        "relationship",
+        "love",
+        "happiness",
+        "sadness",
+        "anger",
+        "fear",
+        "surprise",
+        "disgust",
+        "joy",
+        "trust",
+        "anticipation",
+        "taller",
+        "shorter",
+        "heavier",
+        "lighter",
+        "older",
+        "younger",
+        "stronger",
+        "weaker",
+        "faster",
+        "slower",
+        "smarter",
+        "dumber",
+        "happier",
+        "sadder",
+        "angrier",
+        "fiercer",
+        "braver",
+        "cowardly",
+        "kinder",
+        "meaner",
+        "friendlier",
+        "hostile",
+        "more",
+        "less",
+        "best",
+        "worst",
+        "better",
+        "worse",
+        "boat",
+        "car",
+        "plane",
+        "train",
+        "bicycle",
+        "motorcycle",
+        "bus",
+        "subway",
+        "tram",
+        "ship",
+        "ferry",
+        "yacht",
+        "cruise",
+        "scooter",
+        "skateboard",
+        "rollerblades",
+        "hoverboard",
+        "begin",
+        "seen",
+        "scene",
+        "blade",
+        "movement",
+        "bad",
+        "jeans",
+        "heads",
+        "auto",
+        "come",
+        "on",
+        "give",
+        "words",
+        "for",
+        "me",
+        "tries",
+        "better",
+        "equations",
+        "iterations",
+        "definitions",
+        "terrible",
+        "destiny",
+        "liar",
+        "statistical",
+        "computing",
+        "binary",
+        "captain"
     ]
     #run this operation 10 times, make a dataframe and add the examples to it
     df = pd.DataFrame(columns=['Corrupted', 'Original'])
     i = 1
-    for i in range(5):
+    for i in range(3):
         for sentence in words:
             corrupted, original = generate_example(sentence)
             #concat to dataframe
             df = pd.concat([df, pd.DataFrame({'Corrupted': [corrupted], 'Original': [original]})], ignore_index=True)
             #add the examples to the dataframe
-            if(i % 10 == 0):
-                print(f"Corrupted: {corrupted}\nOriginal: {original}\n")
+            #if(i % 10 == 0):
+                #print(f"Corrupted: {corrupted}\nOriginal: {original}\n")
             #save the dataframe to a csv file
             df.to_csv("training_data.csv", index=False)
-        
+            
+    from tf_layers.seq2seq_transformer import Seq2SeqTransformer
+    s2s = Seq2SeqTransformer()
+    #now I need you to read in the csv file training_data.csv, and fit the model on the data
+    #to do this, you will need to read in the csv file, and make each row a pair (columns are 'Corrupted' and 'Original'), and then I need an array of all the pairs, and then I need to call the fit method on the model with the array of pairs and a number of epochs to train for (e.g. 300)
+    df = pd.read_csv("training_data.csv")
+    #make sure its lower and strip white space
+    pairs = list(zip(df['Corrupted'].str.lower().str.replace(" ", ""), df['Original'].str.lower().str.replace(" ", "")))
+    s2s.fit(pairs)
+    print(s2s.correct("recieve"))
+    print(s2s.correct("definately"))
+    print(s2s.correct("adress"))
+    print(s2s.correct("pass"))
+    print(s2s.correct("tempe"))

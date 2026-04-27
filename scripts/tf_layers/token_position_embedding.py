@@ -1,10 +1,10 @@
 from typing import Any
 
-import keras
-import tensorflow as tf
+import torch
+import torch.nn as nn
 
 
-class TokenAndPositionEmbedding(keras.layers.Layer):
+class TokenAndPositionEmbedding(nn.Module):
     def __init__(self, vocab_size: int, maxlen: int, embed_dim: int):
         """Token and position embedding allows us to convert a tokenized
         vocabulary into an embedding vector. And, it allows us to take
@@ -16,13 +16,13 @@ class TokenAndPositionEmbedding(keras.layers.Layer):
             embed_dim (int): the embedding dimensions
         """
         super().__init__()
-        self.token_emb = keras.layers.Embedding(vocab_size, embed_dim)
+        self.token_emb = nn.Embedding(vocab_size, embed_dim)
 
         # Position embedding can be done more thoughtfully, but here it
         # is done by learning an arbitrary vector
-        self.pos_emb = keras.layers.Embedding(maxlen, embed_dim)
+        self.pos_emb = nn.Embedding(maxlen, embed_dim)
 
-    def call(self, x: Any) -> Any:
+    def forward(self, x: Any) -> Any:
         """The forward pass through the network. It combines position
         embedding and the vocab -> vector embedding. You can think of
         vocab -> vector as being fasttext (though as yet untrained).
@@ -33,8 +33,8 @@ class TokenAndPositionEmbedding(keras.layers.Layer):
         Returns:
             Any: the next layer
         """
-        length = tf.shape(x)[1]
-        positions = tf.range(start=0, limit=length, delta=1)
+        length = x.size(1)
+        positions = torch.arange(0, length, device=x.device)
         positions = self.pos_emb(positions)
         x = self.token_emb(x)
         return x + positions
