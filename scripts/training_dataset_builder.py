@@ -2,30 +2,33 @@ import random
 import string
 import pandas as pd
 
-def corrupt_text(text, prob=0.1):
+import random
+import string
+
+def corrupt_text(text, prob=0.7):
     chars = list(text)
-    i = 0
-    
-    while i < len(chars):
-        if random.random() < prob:
-            operation = random.choice(['delete', 'insert', 'substitute', 'transpose'])
-            
-            if operation == 'delete' and len(chars) > 1:
-                chars.pop(i)
-                continue
-                
-            elif operation == 'insert':
-                chars.insert(i, random.choice(string.ascii_lowercase))
-                
-            elif operation == 'substitute':
-                chars[i] = random.choice(string.ascii_lowercase)
-                
-            elif operation == 'transpose' and i < len(chars) - 1:
-                chars[i], chars[i+1] = chars[i+1], chars[i]
-                i += 1
-                
-        i += 1
-        
+
+    # decide whether to corrupt at all
+    if random.random() >= prob or len(chars) == 0:
+        return text
+
+    operation = random.choice(['delete', 'insert', 'substitute', 'transpose'])
+    i = random.randint(0, len(chars) - 1)
+
+    if operation == 'delete' and len(chars) > 1:
+        chars.pop(i)
+
+    elif operation == 'insert':
+        chars.insert(i, random.choice(string.ascii_lowercase))
+
+    elif operation == 'substitute':
+        chars[i] = random.choice(string.ascii_lowercase)
+
+    elif operation == 'transpose' and len(chars) > 1:
+        if i == len(chars) - 1:
+            i -= 1
+        chars[i], chars[i+1] = chars[i+1], chars[i]
+
     return ''.join(chars)
 
 def generate_example(sentence):
@@ -164,6 +167,8 @@ if __name__ == "__main__":
         "disgust",
         "joy",
         "trust",
+        "hype",
+        "music",
         "anticipation",
         "sadness",
         "anger",
@@ -707,12 +712,19 @@ if __name__ == "__main__":
         "statistical",
         "computing",
         "binary",
-        "captain"
+        "captain",
+        "help",
+        "complete",
+        "thriller",
+        "drama",
+        "night",
+        "oceans",
+        "electric"
     ]
     #run this operation 10 times, make a dataframe and add the examples to it
     df = pd.DataFrame(columns=['Corrupted', 'Original'])
     i = 1
-    for i in range(3):
+    for i in range(2):
         for sentence in words:
             corrupted, original = generate_example(sentence)
             #concat to dataframe
@@ -735,4 +747,6 @@ if __name__ == "__main__":
     print(s2s.correct("definately"))
     print(s2s.correct("adress"))
     print(s2s.correct("pass"))
+    print(s2s.correct("heet"))
+    print(s2s.correct("hper"))
     print(s2s.correct("tempe"))

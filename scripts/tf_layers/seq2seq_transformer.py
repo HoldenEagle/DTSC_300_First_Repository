@@ -46,7 +46,7 @@ class Seq2SeqTransformer:
         self.optimizer = optim.Adam(self.model.parameters())
 
     def fit(
-        self, wrong_correct_pairs: list[tuple[str, str]], training_epochs: int = 500
+        self, wrong_correct_pairs: list[tuple[str, str]], training_epochs: int = 300
     ):
         """Fit a model from a list of pairs of wrong and correct words."""
         wrong_data, corrected_comparison_data, corrected_label_data = (
@@ -78,6 +78,13 @@ class Seq2SeqTransformer:
 
             if epoch % 10 == 0:
                 print(f"Epoch {epoch}, Loss: {loss.item():.4f}")
+                print(self.correct("recieve"))
+                print(self.correct("definately"))
+                print(self.correct("adress"))
+                print(self.correct("pass"))
+                print(self.correct("heet"))
+                print(self.correct("hper"))
+                print(self.correct("tempe"))
 
     def correct(self, txt: str) -> str:
         """Feed a misspelled word through the model and decode the output."""
